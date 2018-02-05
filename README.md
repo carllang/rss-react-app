@@ -28,7 +28,7 @@ Clone this repo:
 git clone git@github.com:carllang/rss-react-app.git
 ```
 
-Change into the newly cloned repo:
+Change into the newly cloned repo directory:
 
 ```
 cd rss-react-app
@@ -40,7 +40,8 @@ Install dependencies
 yarn or npm install
 ```
 
-##Running the app
+##Run the app
+
 Type the following command in the project directory
 
 ```
@@ -55,7 +56,7 @@ Work in progress
 ## Built With
 
 * [styled-components](https://www.styled-components.com/)
-* [Webpack](https://maven.apache.org/) - Dependency Management
+* [Webpack](https://maven.apache.org/)
 * [React](https://reactjs.org/)
 * [Redux](https://redux.js.org)
 * [Rss to json ] (https://rss2json.com)
