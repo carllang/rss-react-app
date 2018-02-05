@@ -40,7 +40,7 @@ Install dependencies
 yarn or npm install
 ```
 
-##Run the app
+### Run the app
 
 Type the following command in the project directory
 
