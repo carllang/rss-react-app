@@ -4,7 +4,7 @@ Add rss feed url's to a list and select an active rss feed to display
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine.
+These instructions will get the project up and running on your local machine.
 
 ### Prerequisites
 
@@ -20,7 +20,7 @@ Chrome / Firefox
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+Follow these steps to install the project
 
 Clone this repo:
 
@@ -39,6 +39,14 @@ Install dependencies
 ```
 yarn or npm install
 ```
+
+##Running the app
+Type the following command in the project directory
+
+```
+yarn start or npm start
+```
+Navigate your browser to http://localhost:8080
 
 ## Running the tests
 
