@@ -49,9 +49,12 @@ yarn start or npm start
 ```
 Navigate your browser to http://localhost:9001
 
-## Running the tests
+Sample feeds:
 
-Work in progress
+http://www.feedforall.com/sample.xml
+http://www.feedforall.com/sample-feed.xml
+http://www.feedforall.com/blog-feed.xml
+http://www.rss-specifications.com/blog-feed.xml
 
 ## Built With
 
