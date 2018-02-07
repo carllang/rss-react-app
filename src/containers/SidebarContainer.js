@@ -10,8 +10,8 @@ import {
 import RssFeedButton from '../components/RssFeedButton'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
-import { getRssFeed } from '../services/rss'
-
+import { getRssFeed } from '../services/rssService'
+import { doDB } from '../services/dexieService'
 
 const Container = styled.div`
   width: 35%;
@@ -19,26 +19,27 @@ const Container = styled.div`
   padding: 20px;
   background-color: ${props => props.theme.menuBackgroundColour}
 `
-const initialState = { url: '', activeId: null }
+
 
 class SideBarContainer extends React.Component {
   constructor () {
     super()
-    this.state = Object.assign({}, initialState)
+    this.state = { url: '', activeFeedId: null }
   }
 
   renderFeeds = () => {
     const copiedFeeds = Object.assign([], this.props.feeds)
     const markup = copiedFeeds.reverse().map((item, idx) => {
-      return  <RssFeedButton 
+      return  item.feed ? <RssFeedButton 
                 key={item.feedId} 
                 feedId={item.feedId} 
-                activeId={this.state.activeId} 
+                activeId={this.state.activeFeedId} 
                 clickFeed={this.clickFeed} 
                 removeFeedItem={this.removeFeedItem}
               >
                 {item.feed.url}
               </RssFeedButton>
+              : null
     })
     return markup
   }
@@ -49,47 +50,61 @@ class SideBarContainer extends React.Component {
 
   clickFeed = (index) => {
     this.props.dispatchSetActiveByIndex(index)
-    this.setState({ ...this.state, activeId: index })
+    this.setState({ ...this.state, activeFeedId: index })
   }
 
   getFeed(url) {
     return getRssFeed(url)
   }
 
-  onChange = (e) => {
+  handleChange = (e) => {
     this.setState({ ...this.state, url: e.target.value })
   }
 
-  resetInput = () => {
-    this.setState(initialState)
+  resetState() {
+    this.setState({ ...this.state, url: '' })
   }
+
+  
   
   onClickAddFeed = (e) => {
     e.preventDefault()
-    if (this.state.url.length > 0) {
-       this.getFeed(this.state.url).then(response => {
-        response.json().then(res => {
-          this.props.dispatchAddFeed(res)
-          this.props.dispatchSetActive(res)
-          
-        })
+
+    if (this.state.url.match(/(https?:\/\/[^\s]+)/g)) {
+      this.getFeed(this.state.url).then(response => {
+        
+        if (response.status === 200) {
+          response.json().then(res => {
+            
+            if (res.status === 'ok') {
+              this.props.dispatchAddFeed(res)
+              this.props.dispatchSetActive(res)
+              doDB(res)
+            }
+
+          })
+        }
+
       }).catch(function (e) {
-        console.log('API Error ', e)
+        console.log('Fetch Error ', e)
       })
+    } else {
+      this.resetState()
     }
   }
+
   componentWillReceiveProps(nextProps) {
-    this.setState({ ...this.state, activeId: nextProps.activeFeedId })
+    this.setState({ activeFeedId: nextProps.activeFeedId, url: '' })
   }
 
   render() {
     return(
       <Container>
-        <form style={{ marginBottom: '20px' }} onSubmit={this.onClickAddFeed}>
-          <TextField placeholder="Enter feed url" name="feedSearch" value={this.state.url} onChange={this.onChange} resetInput={this.resetInput} />
+        <form style={{ marginBottom: '20px' }} >
+          <TextField placeholder="Enter feed url" name="feedSearch" value={this.state.url} handleChange={this.handleChange} />
           <Button type="submit" onClickAddFeed={this.onClickAddFeed} style={{ margin : '10px' }}>Search</Button>
         </form>  
-        {this.renderFeeds()}
+        {this.renderFeeds()}  
       </Container>
     )
   }

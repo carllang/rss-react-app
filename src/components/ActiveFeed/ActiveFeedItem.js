@@ -11,7 +11,6 @@ const ActiveFeedItemStyled = styled.div`
   box-shadow:         0 8px 6px -6px black;
   border: 1px solid black;
   background-color: ${props => props.theme.light};
-  overflow: scroll;
 `
 const getContent = content => content
 const ActiveFeedItem = (props) => {

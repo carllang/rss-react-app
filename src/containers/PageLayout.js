@@ -11,13 +11,12 @@ const Container = styled.div`
   padding: 0 20px;
 `
 
-const PageLayout = (props) =>
-  <div>
-    <Header />
-    <Container>
-      {props.children}
-    </Container>
-  </div>
+const PageLayout = (props) => [
+  <Header key="home" />,
+  <Container key="container" >
+    {props.children}
+  </Container>
+]
 
 
 export default PageLayout

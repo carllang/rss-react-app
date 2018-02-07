@@ -11,7 +11,7 @@ const StyledInput = styled.input`
     margin-right: 5%;
     width: 65%;
 `
-const TextField = (props) => <StyledInput type="text" name={props.name} placeholder={props.placeholder} onChange={(e) => props.onChange(e)} onFocus={() => props.resetInput()} />
+const TextField = (props) => <StyledInput type="text" {...props} onChange={(e) => props.handleChange(e)} />
 
 TextField.propTypes = {
     name: PropTypes.string.isRequired
