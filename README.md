@@ -47,7 +47,7 @@ Type the following command in the project directory
 ```
 yarn start or npm start
 ```
-Navigate your browser to http://localhost:8080
+Navigate your browser to http://localhost:9001
 
 ## Running the tests
 
