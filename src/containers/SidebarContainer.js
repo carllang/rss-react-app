@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import { 
   addFeed, 
-  setActiveFeed, 
   setActiveFeedbyIndex,
   removeFeed
 } from '../ducks/rss'
@@ -11,7 +10,6 @@ import RssFeedButton from '../components/RssFeedButton'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
 import { getRssFeed } from '../services/rssService'
-import { doDB } from '../services/dexieService'
 
 const Container = styled.div`
   width: 35%;
@@ -24,16 +22,16 @@ const Container = styled.div`
 class SideBarContainer extends React.Component {
   constructor () {
     super()
-    this.state = { url: '', activeFeedId: null }
+    this.state = { url: '' }
   }
 
   renderFeeds = () => {
     const copiedFeeds = Object.assign([], this.props.feeds)
     const markup = copiedFeeds.reverse().map((item, idx) => {
-      return  item.feed ? <RssFeedButton 
-                key={item.feedId} 
+      return  item.feed ? <RssFeedButton
+                key={idx} 
                 feedId={item.feedId} 
-                activeId={this.state.activeFeedId} 
+                activeId={this.props.activeId} 
                 clickFeed={this.clickFeed} 
                 removeFeedItem={this.removeFeedItem}
               >
@@ -50,7 +48,6 @@ class SideBarContainer extends React.Component {
 
   clickFeed = (index) => {
     this.props.dispatchSetActiveByIndex(index)
-    this.setState({ ...this.state, activeFeedId: index })
   }
 
   getFeed(url) {
@@ -58,15 +55,13 @@ class SideBarContainer extends React.Component {
   }
 
   handleChange = (e) => {
-    this.setState({ ...this.state, url: e.target.value })
+    this.setState({  url: e.target.value })
   }
 
   resetState() {
-    this.setState({ ...this.state, url: '' })
+    this.setState({ url: '' })
   }
 
-  
-  
   onClickAddFeed = (e) => {
     e.preventDefault()
 
@@ -78,8 +73,6 @@ class SideBarContainer extends React.Component {
             
             if (res.status === 'ok') {
               this.props.dispatchAddFeed(res)
-              this.props.dispatchSetActive(res)
-              doDB(res)
             }
 
           })
@@ -94,7 +87,7 @@ class SideBarContainer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ activeFeedId: nextProps.activeFeedId, url: '' })
+    this.setState({ url: '' })
   }
 
   render() {
@@ -110,11 +103,10 @@ class SideBarContainer extends React.Component {
   }
 }
 
-const mapStateToProps = ({ feeds, activeFeed }) => {
-  const activeFeedId = activeFeed ? activeFeed.feedId : null
+const mapStateToProps = ({ feeds, activeId }) => {
   return {
     feeds,
-    activeFeedId
+    activeId
   }
 }
 
@@ -122,8 +114,7 @@ function mapDispatchToProps (dispatch) {
   return {
     dispatchRemoveFeed: index => dispatch(removeFeed(index)),
     dispatchSetActiveByIndex: index => dispatch(setActiveFeedbyIndex(index)),
-    dispatchAddFeed: url => dispatch(addFeed(url)),
-    dispatchSetActive: url => dispatch(setActiveFeed(url))
+    dispatchAddFeed: url => dispatch(addFeed(url))
   }
 }
 

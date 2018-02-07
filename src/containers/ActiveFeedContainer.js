@@ -19,6 +19,11 @@ class ActiveFeedContainer extends React.Component {
   }
 }
 
-const mapStateToProps = ({ activeFeed })  => ({ activeFeed })
+const mapStateToProps = ({ feeds, activeId })  => {
+  const activeFeed = feeds.find((item) => item.feedId === activeId)
+  return {
+    activeFeed 
+  }
+}
 
 export default connect(mapStateToProps)(ActiveFeedContainer)
