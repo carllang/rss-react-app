@@ -17,7 +17,7 @@ const Container = styled.div`
 
 const HeaderMarkup = () =>
   <Container>
-    <h3 style={{ fontWeight: 'normal' }}> 500Tech React & Redux RSS Feed assignment</h3>
+    <h3 style={{ fontWeight: 'normal' }}> Rss feed</h3>
   </Container>
 
 

@@ -3,15 +3,13 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import { 
   addFeed, 
-  setActiveFeed, 
   setActiveFeedbyIndex,
   removeFeed
 } from '../ducks/rss'
 import RssFeedButton from '../components/RssFeedButton'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
-import { getRssFeed } from '../services/rss'
-
+import { getRssFeed } from '../services/rssService'
 
 const Container = styled.div`
   width: 35%;
@@ -19,26 +17,27 @@ const Container = styled.div`
   padding: 20px;
   background-color: ${props => props.theme.menuBackgroundColour}
 `
-const initialState = { url: '', activeId: null }
+
 
 class SideBarContainer extends React.Component {
   constructor () {
     super()
-    this.state = Object.assign({}, initialState)
+    this.state = { url: '' }
   }
 
   renderFeeds = () => {
     const copiedFeeds = Object.assign([], this.props.feeds)
     const markup = copiedFeeds.reverse().map((item, idx) => {
-      return  <RssFeedButton 
-                key={item.feedId} 
+      return  item.feed ? <RssFeedButton
+                key={idx} 
                 feedId={item.feedId} 
-                activeId={this.state.activeId} 
+                activeId={this.props.activeId} 
                 clickFeed={this.clickFeed} 
                 removeFeedItem={this.removeFeedItem}
               >
                 {item.feed.url}
               </RssFeedButton>
+              : null
     })
     return markup
   }
@@ -49,57 +48,65 @@ class SideBarContainer extends React.Component {
 
   clickFeed = (index) => {
     this.props.dispatchSetActiveByIndex(index)
-    this.setState({ ...this.state, activeId: index })
   }
 
   getFeed(url) {
     return getRssFeed(url)
   }
 
-  onChange = (e) => {
-    this.setState({ ...this.state, url: e.target.value })
+  handleChange = (e) => {
+    this.setState({  url: e.target.value })
   }
 
-  resetInput = () => {
-    this.setState(initialState)
+  resetState() {
+    this.setState({ url: '' })
   }
-  
+
   onClickAddFeed = (e) => {
     e.preventDefault()
-    if (this.state.url.length > 0) {
-       this.getFeed(this.state.url).then(response => {
-        response.json().then(res => {
-          this.props.dispatchAddFeed(res)
-          this.props.dispatchSetActive(res)
-          
-        })
+
+    if (this.state.url.match(/(https?:\/\/[^\s]+)/g)) {
+      this.getFeed(this.state.url).then(response => {
+        
+        if (response.status === 200) {
+          response.json().then(res => {
+            
+            if (res.status === 'ok') {
+              this.props.dispatchAddFeed(res)
+            }
+
+          })
+        }
+
       }).catch(function (e) {
-        console.log('API Error ', e)
+        console.log('Fetch Error ', e)
       })
+    } else {
+      this.resetState()
     }
   }
+
   componentWillReceiveProps(nextProps) {
-    this.setState({ ...this.state, activeId: nextProps.activeFeedId })
+    this.setState({ url: '' })
   }
 
   render() {
     return(
       <Container>
-        <form style={{ marginBottom: '20px' }} onSubmit={this.onClickAddFeed}>
-          <TextField placeholder="Enter feed url" name="feedSearch" value={this.state.url} onChange={this.onChange} resetInput={this.resetInput} />
+        <form style={{ marginBottom: '20px' }} >
+          <TextField placeholder="Enter feed url" name="feedSearch" value={this.state.url} handleChange={this.handleChange} />
           <Button type="submit" onClickAddFeed={this.onClickAddFeed} style={{ margin : '10px' }}>Search</Button>
         </form>  
-        {this.renderFeeds()}
+        {this.renderFeeds()}  
       </Container>
     )
   }
 }
 
-const mapStateToProps = ({ feeds, activeFeed }) => {
-  const activeFeedId = activeFeed ? activeFeed.feedId : null
+const mapStateToProps = ({ feeds, activeId }) => {
   return {
     feeds,
-    activeFeedId
+    activeId
   }
 }
 
@@ -107,8 +114,7 @@ function mapDispatchToProps (dispatch) {
   return {
     dispatchRemoveFeed: index => dispatch(removeFeed(index)),
     dispatchSetActiveByIndex: index => dispatch(setActiveFeedbyIndex(index)),
-    dispatchAddFeed: url => dispatch(addFeed(url)),
-    dispatchSetActive: url => dispatch(setActiveFeed(url))
+    dispatchAddFeed: url => dispatch(addFeed(url))
   }
 }
 

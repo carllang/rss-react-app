@@ -7,6 +7,7 @@ const Container = styled.div`
   width: 65%;
   padding: 0 20px;
   color: black;
+  overflow: scroll;
 `
 
 
@@ -18,6 +19,11 @@ class ActiveFeedContainer extends React.Component {
   }
 }
 
-const mapStateToProps = ({ activeFeed })  => ({ activeFeed })
+const mapStateToProps = ({ feeds, activeId })  => {
+  const activeFeed = feeds.find((item) => item.feedId === activeId)
+  return {
+    activeFeed 
+  }
+}
 
 export default connect(mapStateToProps)(ActiveFeedContainer)
